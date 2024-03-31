@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/Framework/App/Manifest/Schema/manifest-2.0.xsd">
+    <meta>
+        <name>SCDPayPalApp</name>
+        <label>PayPal App</label>
+        <label lang="de-DE">PayPal App</label>
+        <description/>
+        <description lang="de-DE"/>
+        <author>shopware AG</author>
+        <copyright>(c) by shopware AG</copyright>
+        <version>0.0.1</version>
+        <icon>Resources/config/plugin.png</icon>
+        <license>MIT</license>
+    </meta>
+    <setup>
+        <registrationUrl>http://localhost:8080/app/lifecycle/register</registrationUrl>
+        <secret>devsecret</secret>
+    </setup>
+    <webhooks>
+        <webhook name="appActivated" url="http://localhost:8000/app/lifecycle/activate" event="app.activated"/>
+        <webhook name="appDeactivated" url="http://localhost:8000/app/lifecycle/deactivate" event="app.deactivated"/>
+        <webhook name="appDeleted" url="http://localhost:8000/app/lifecycle/delete" event="app.deleted"/>
+    </webhooks>
+</manifest>
