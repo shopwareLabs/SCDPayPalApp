@@ -9,17 +9,25 @@
         <description lang="de-DE"/>
         <author>shopware AG</author>
         <copyright>(c) by shopware AG</copyright>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
         <icon>Resources/config/plugin.png</icon>
         <license>MIT</license>
     </meta>
     <setup>
-        <registrationUrl>http://localhost:8080/app/lifecycle/register</registrationUrl>
+        <registrationUrl>http://localhost:8080/lifecycle/register</registrationUrl>
         <secret>devsecret</secret>
     </setup>
     <webhooks>
-        <webhook name="appActivated" url="http://localhost:8000/app/lifecycle/activate" event="app.activated"/>
-        <webhook name="appDeactivated" url="http://localhost:8000/app/lifecycle/deactivate" event="app.deactivated"/>
-        <webhook name="appDeleted" url="http://localhost:8000/app/lifecycle/delete" event="app.deleted"/>
+        <webhook name="appActivated" url="http://localhost:8080/lifecycle/activate" event="app.activated"/>
+        <webhook name="appDeactivated" url="http://localhost:8080/lifecycle/deactivate" event="app.deactivated"/>
+        <webhook name="appDeleted" url="http://localhost:8080/lifecycle/delete" event="app.deleted"/>
     </webhooks>
+    <payments>
+        <payment-method>
+            <identifier>paypal</identifier>
+            <name>PayPal</name>
+            <pay-url>http://localhost:8080/payment/paypal/pay</pay-url>
+            <finalize-url>http://localhost:8080/payment/paypal/finalize</finalize-url>
+        </payment-method>
+    </payments>
 </manifest>
