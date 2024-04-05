@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace Swag\PayPalApp\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
 use Shopware\AppBundle\Entity\AbstractShop;

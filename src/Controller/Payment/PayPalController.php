@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Payment;
+namespace Swag\PayPalApp\Controller\Payment;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
