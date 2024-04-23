@@ -3,6 +3,7 @@
 namespace Swag\PayPalApp\Api\Client;
 
 use Swag\PayPalApp\Api\Constants;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\HttpOptions;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -11,11 +12,14 @@ class AuthenticationClientFactory
 {
 
     public function __construct(
+        #[Autowire(env: 'CLIENT_ID')]
         private string $clientId,
+        #[Autowire(env: 'CLIENT_SECRET')]
         private string $clientSecret,
+        #[Autowire(env: 'CLIENT_ID_SANDBOX')]
         private string $clientIdSandbox,
+        #[Autowire(env: 'CLIENT_SECRET_SANDBOX')]
         private string $clientSecretSandbox,
-        private HttpClient $clientFactory
     )
     {
     }
@@ -28,10 +32,7 @@ class AuthenticationClientFactory
         $clientOptions = new HttpOptions();
         $clientOptions->setAuthBasic($clientId, $clientSecret);
         $clientOptions->setBaseUri($sandbox ? Constants::BASEURL_SANDBOX : Constants::BASEURL_LIVE);
-        $clientOptions->setHeaders([
-            'PayPal-Partner-Attribution-Id' => Constants::PARTNER_ATTRIBUTION_ID,
-        ]);
 
-        return $this->clientFactory->create($clientOptions->toArray());
+        return HttpClient::create($clientOptions->toArray());
     }
 }

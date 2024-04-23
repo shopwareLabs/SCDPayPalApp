@@ -13,6 +13,13 @@ use Swag\PayPalApp\Api\Struct\V2\Order\PurchaseUnit\Payments\Common\SellerProtec
 #[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments_authorization')]
 class Authorization extends Payment
 {
+    public const STATE_CREATED = 'CREATED';
+    public const STATE_CAPTURED = 'CAPTURED';
+    public const STATE_DENIED = 'DENIED';
+    public const STATE_PARTIALLY_CAPTURED = 'PARTIALLY_CAPTURED';
+    public const STATE_VOIDED = 'VOIDED';
+    public const STATE_PENDING = 'PENDING';
+
     #[OA\Property(ref: SellerProtection::class)]
     protected SellerProtection $sellerProtection;
 

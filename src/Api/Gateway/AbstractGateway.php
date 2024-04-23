@@ -2,18 +2,11 @@
 
 namespace Swag\PayPalApp\Api\Gateway;
 
-use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\PayPalApp\Api\Client\ApiContext;
-use Swag\PayPalApp\Api\Client\AuthenticationBuilder;
 use Swag\PayPalApp\Api\Client\ClientFactory;
-use Swag\PayPalApp\Api\Client\CredentialsIdentifier;
-use Swag\PayPalApp\Api\Constants;
 use Swag\PayPalApp\Api\Struct\PayPalApiCollection;
 use Swag\PayPalApp\Api\Struct\PayPalApiStruct;
-use Swag\PayPalApp\Api\Struct\V2\Order;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\HttpOptions;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class AbstractGateway
 {
@@ -37,9 +30,14 @@ abstract class AbstractGateway
     {
         $client = $this->isThirdParty() ? $this->clientFactory->createThirdPartyClient($context) : $this->clientFactory->createFirstPartyClient($context);
         $options = new HttpOptions();
-        $options->setHeaders($context->toHeaders());
-        if ($body) {
+        if ($body || ($method !== 'GET' && $method !== 'DELETE')) {
             $options->setJson($body);
+            $options->setHeaders([
+                ...$context->toHeaders(),
+                'Content-Type' => 'application/json',
+            ]);
+        } else {
+            $options->setHeaders($context->toHeaders());
         }
 
         $response = $client->request($method, $uri, $options->toArray());
@@ -56,6 +54,6 @@ abstract class AbstractGateway
         $responseStruct = new $responseClass();
         $responseStruct->assign($response->toArray());
 
-        return new $responseClass();
+        return $responseStruct;
     }
 }

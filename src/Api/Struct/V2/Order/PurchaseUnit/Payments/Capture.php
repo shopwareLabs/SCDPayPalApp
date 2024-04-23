@@ -11,9 +11,16 @@ use OpenApi\Attributes as OA;
 use Swag\PayPalApp\Api\Struct\V2\Order\PurchaseUnit\Payments\Capture\SellerReceivableBreakdown;
 use Swag\PayPalApp\Api\Struct\V2\Order\PurchaseUnit\Payments\Common\SellerProtection;
 
-#[Package('checkout'), OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments_capture')]
+#[OA\Schema(schema: 'swag_paypal_v2_order_purchase_unit_payments_capture')]
 class Capture extends Payment
 {
+    public const STATE_COMPLETED = 'COMPLETED';
+    public const STATE_DECLINED = 'DECLINED';
+    public const STATE_PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED';
+    public const STATE_PENDING = 'PENDING';
+    public const STATE_REFUNDED = 'REFUNDED';
+    public const STATE_FAILED = 'FAILED';
+
     #[OA\Property(type: 'string', nullable: true)]
     protected ?string $invoiceId = null;
 

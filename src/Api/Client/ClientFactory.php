@@ -2,8 +2,8 @@
 
 namespace Swag\PayPalApp\Api\Client;
 
-use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\PayPalApp\Api\Constants;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\HttpOptions;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -11,8 +11,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ClientFactory
 {
     public function __construct(
-        private AuthenticationBuilder $authenticationBuilder,
-        private HttpClient $clientFactory
+        private readonly AuthenticationBuilder $authenticationBuilder,
+        #[Autowire(env: 'MERCHANT_ID')]
+        private readonly string $merchantId,
+        #[Autowire(env: 'SANDBOX')]
+        private readonly bool $sandbox,
     )
     {
     }
@@ -21,7 +24,7 @@ class ClientFactory
     {
         $shopConfig = $this->getShopConfig($context);
 
-        return $this->clientFactory->create($this->getDefaultHttpOptions($shopConfig)->toArray());
+        return HttpClient::create($this->getDefaultHttpOptions($shopConfig)->toArray());
     }
 
     public function createThirdPartyClient(ApiContext $context): HttpClientInterface
@@ -33,7 +36,7 @@ class ClientFactory
             ...$context->toHeaders()
         ]);
 
-        return $this->clientFactory->create($httpOptions->toArray());
+        return HttpClient::create($httpOptions->toArray());
     }
 
 
@@ -42,9 +45,6 @@ class ClientFactory
         $httpOptions = new HttpOptions();
         $httpOptions->setAuthBearer($this->authenticationBuilder->getAccessToken($shopConfig->isSandbox()));
         $httpOptions->setBaseUri($shopConfig->isSandbox() ? Constants::BASEURL_SANDBOX : Constants::BASEURL_LIVE);
-        $httpOptions->setHeaders([
-            'PayPal-Partner-Attribution-Id' => Constants::PARTNER_ATTRIBUTION_ID,
-        ]);
 
         return $httpOptions;
     }
@@ -53,6 +53,6 @@ class ClientFactory
     {
         // TODO: build a repository to do this
 
-        return new CredentialsIdentifier('dummy', true);
+        return new CredentialsIdentifier($this->merchantId, $this->sandbox);
     }
 }

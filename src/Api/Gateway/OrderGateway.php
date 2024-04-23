@@ -2,16 +2,9 @@
 
 namespace Swag\PayPalApp\Api\Gateway;
 
-use Shopware\App\SDK\Shop\ShopInterface;
 use Swag\PayPalApp\Api\Client\ApiContext;
-use Swag\PayPalApp\Api\Client\AuthenticationBuilder;
-use Swag\PayPalApp\Api\Client\ClientFactory;
-use Swag\PayPalApp\Api\Client\CredentialsIdentifier;
-use Swag\PayPalApp\Api\Constants;
 use Swag\PayPalApp\Api\Struct\V2\Order;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpClient\HttpOptions;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Swag\PayPalApp\Api\Struct\V2\PatchCollection;
 
 class OrderGateway extends AbstractGateway
 {
@@ -24,6 +17,50 @@ class OrderGateway extends AbstractGateway
             self::GATEWAY_URL,
             $order,
             Order::class,
+            $context
+        );
+    }
+
+    public function getOrder(string $orderId, ApiContext $context): Order
+    {
+        return $this->request(
+            'GET',
+            self::GATEWAY_URL . '/' . $orderId,
+            null,
+            Order::class,
+            $context
+        );
+    }
+
+    public function authorizeOrder(string $orderId, ApiContext $context): Order
+    {
+        return $this->request(
+            'POST',
+            self::GATEWAY_URL . '/' . $orderId . '/authorize',
+            null,
+            Order::class,
+            $context
+        );
+    }
+
+    public function captureOrder(string $orderId, ApiContext $context): Order
+    {
+        return $this->request(
+            'POST',
+            self::GATEWAY_URL . '/' . $orderId . '/capture',
+            null,
+            Order::class,
+            $context
+        );
+    }
+
+    public function patchOrder(string $orderId, PatchCollection $patches, ApiContext $context): Order
+    {
+        return $this->request(
+            'PATCH',
+            self::GATEWAY_URL . '/' . $orderId,
+            $patches,
+            null,
             $context
         );
     }

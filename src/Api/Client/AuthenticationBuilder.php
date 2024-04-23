@@ -3,6 +3,7 @@
 namespace Swag\PayPalApp\Api\Client;
 
 use Swag\PayPalApp\Api\Struct\V1\Token;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class AuthenticationBuilder
 {
@@ -12,7 +13,9 @@ class AuthenticationBuilder
     private ?Token $sandboxToken = null;
 
     public function __construct(
+        #[Autowire(env: 'CLIENT_ID')]
         private string $clientId,
+        #[Autowire(env: 'CLIENT_ID_SANDBOX')]
         private string $clientIdSandbox,
         private readonly AuthenticationClientFactory $authenticationClientFactory,
     ) {
