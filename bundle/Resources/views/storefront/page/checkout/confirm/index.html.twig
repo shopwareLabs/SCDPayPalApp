@@ -1,0 +1,19 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_confirm_form_submit %}
+    {{ parent() }}
+
+    {% block page_checkout_confirm_form_submit_paypal_app_spb %}
+
+        {% if (context.paymentMethod.technicalName === 'payment_SCDPayPalApp_paypal') and page.order is not defined %}
+        <div data-swag-paypal-app-wallet="true"
+             data-swag-paypal-app-wallet-options="{{ {
+                 currency: context.currency.isoCode,
+                 cart: page.cart,
+                 salesChannelContext: context,
+             }|json_encode }}">
+        </div>
+        {% endif %}
+
+    {% endblock %}
+{% endblock %}

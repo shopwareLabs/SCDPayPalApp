@@ -54,9 +54,9 @@ class OrderGateway extends AbstractGateway
         );
     }
 
-    public function patchOrder(string $orderId, PatchCollection $patches, ApiContext $context): Order
+    public function patchOrder(string $orderId, PatchCollection $patches, ApiContext $context): void
     {
-        return $this->request(
+        $this->request(
             'PATCH',
             self::GATEWAY_URL . '/' . $orderId,
             $patches,

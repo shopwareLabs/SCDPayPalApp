@@ -14,7 +14,9 @@ use Swag\PayPalApp\Api\Client\ApiContext;
 use Swag\PayPalApp\Api\Converter\PayPalOrderBuilder;
 use Swag\PayPalApp\Api\Gateway\OrderGateway;
 use Swag\PayPalApp\Api\Struct\V2\Common\Link;
+use Swag\PayPalApp\Api\Struct\V2\PatchCollection;
 use Swag\PayPalApp\Service\OrderExecuteService;
+use Swag\PayPalApp\Service\PatchBuilder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,12 +30,25 @@ class PayPalController
         private readonly OrderGateway $orderGateway,
         private readonly ResponseSigner $responseSigner,
         private readonly OrderExecuteService $orderExecuteService,
+        private readonly PatchBuilder $patchBuilder,
     ) {
     }
 
     #[Route('/pay', name: 'payment.paypal.pay', methods: ['POST'])]
     public function pay(PaymentPayAction $payAction, ShopInterface $shop): ResponseInterface
     {
+        $orderId = $payAction->requestData['paypalOrderId'];
+        if ($orderId ?? null) {
+            $apiContext = new ApiContext($payAction->order->getSalesChannelId(), $shop, preferRepresentation: true);
+
+            $patch = $this->patchBuilder->createPurchaseUnitPatch($payAction->order, $payAction->orderTransaction);
+            $this->orderGateway->patchOrder($orderId, new PatchCollection([$patch]), $apiContext);
+
+            $response = PaymentResponse::redirect($payAction->returnUrl . '&' . \http_build_query(['token' => $orderId]));
+
+            return $this->responseSigner->signResponse($response, $shop);
+        }
+
         $order = $this->orderBuilder->getOrder($payAction, new ParameterBag($payAction->requestData));
 
         $apiContext = new ApiContext($payAction->order->getSalesChannelId(), $shop, preferRepresentation: true);

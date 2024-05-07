@@ -5,18 +5,24 @@
         <name>SCDPayPalApp</name>
         <label>PayPal App</label>
         <label lang="de-DE">PayPal App</label>
-        <description/>
-        <description lang="de-DE"/>
         <author>shopware AG</author>
         <copyright>(c) by shopware AG</copyright>
-        <version>0.0.2</version>
-        <icon>Resources/config/plugin.png</icon>
+        <version>0.0.3</version>
         <license>MIT</license>
     </meta>
     <setup>
         <registrationUrl>http://localhost:8080/lifecycle/register</registrationUrl>
         <secret>devsecret</secret>
     </setup>
+    <permissions>
+        <read>sales_channel</read>
+        <read>customer</read>
+        <read>currency</read>
+        <read>country</read>
+        <read>language</read>
+        <read>payment_method</read>
+        <read>shipping_method</read>
+    </permissions>
     <webhooks>
         <webhook name="appActivated" url="http://localhost:8080/lifecycle/activate" event="app.activated"/>
         <webhook name="appDeactivated" url="http://localhost:8080/lifecycle/deactivate" event="app.deactivated"/>

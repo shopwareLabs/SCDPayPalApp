@@ -32,3 +32,8 @@ devenv.local.nix
 
 # PhpStorm
 /.idea/
+
+
+# js
+node_modules/
+bundle/Resources/app/storefront/dist/*

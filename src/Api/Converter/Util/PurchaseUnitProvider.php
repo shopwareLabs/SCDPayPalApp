@@ -78,7 +78,8 @@ class PurchaseUnitProvider
 
     private function createShipping(?Customer $customer, ?ShopwareOrder $order): ?Shipping
     {
-        $shippingAddress = \current($order?->getDeliveries() ?? [])?->getShippingOrderAddress() ?? $customer?->getActiveShippingAddress();
+        $delivery = \current($order?->getDeliveries() ?? []);
+        $shippingAddress = $delivery ? $delivery->getShippingOrderAddress() : $customer?->getActiveShippingAddress();
         if ($shippingAddress === null) {
             return null;
         }
