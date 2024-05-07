@@ -28,7 +28,6 @@ class PayPalController
     public function __construct(
         private readonly PayPalOrderBuilder $orderBuilder,
         private readonly OrderGateway $orderGateway,
-        private readonly ResponseSigner $responseSigner,
         private readonly OrderExecuteService $orderExecuteService,
         private readonly PatchBuilder $patchBuilder,
     ) {
@@ -37,16 +36,14 @@ class PayPalController
     #[Route('/pay', name: 'payment.paypal.pay', methods: ['POST'])]
     public function pay(PaymentPayAction $payAction, ShopInterface $shop): ResponseInterface
     {
-        $orderId = $payAction->requestData['paypalOrderId'];
-        if ($orderId ?? null) {
+        $orderId = $payAction->requestData['paypalOrderId'] ?? null;
+        if ($orderId) {
             $apiContext = new ApiContext($payAction->order->getSalesChannelId(), $shop, preferRepresentation: true);
 
             $patch = $this->patchBuilder->createPurchaseUnitPatch($payAction->order, $payAction->orderTransaction);
             $this->orderGateway->patchOrder($orderId, new PatchCollection([$patch]), $apiContext);
 
-            $response = PaymentResponse::redirect($payAction->returnUrl . '&' . \http_build_query(['token' => $orderId]));
-
-            return $this->responseSigner->signResponse($response, $shop);
+            return PaymentResponse::redirect($payAction->returnUrl . '&' . \http_build_query(['token' => $orderId]));
         }
 
         $order = $this->orderBuilder->getOrder($payAction, new ParameterBag($payAction->requestData));
@@ -54,16 +51,14 @@ class PayPalController
         $apiContext = new ApiContext($payAction->order->getSalesChannelId(), $shop, preferRepresentation: true);
         $order = $this->orderGateway->createOrder($order, $apiContext);
 
-        $response = PaymentResponse::redirect($order->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)->getHref());
-
-        return $this->responseSigner->signResponse($response, $shop);
+        return PaymentResponse::redirect($order->getLinks()->getRelation(Link::RELATION_PAYER_ACTION)->getHref());
     }
 
     #[Route('/finalize', name: 'payment.paypal.finalize', methods: ['POST'])]
     public function finalize(PaymentFinalizeAction $finalizeAction, ShopInterface $shop): ResponseInterface
     {
         if ($finalizeAction->queryParameters['cancel'] ?? null) {
-            return $this->responseSigner->signResponse(PaymentResponse::cancelled('Customer cancelled'), $shop);
+            return PaymentResponse::cancelled('Customer cancelled');
         }
 
         $orderId = $finalizeAction->queryParameters['token'];
@@ -73,6 +68,6 @@ class PayPalController
         $order = $this->orderGateway->getOrder($orderId, $apiContext);
         $status = $this->orderExecuteService->captureOrAuthorizeOrder($order, $apiContext);
 
-        return $this->responseSigner->signResponse(PaymentResponse::createStatusResponse($status), $shop);
+        return PaymentResponse::createStatusResponse($status);
     }
 }

@@ -29,15 +29,6 @@
         },
         "sort-packages": true
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../app*",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Swag\\PayPalApp\\": "src/"
@@ -71,7 +62,8 @@
         ]
     },
     "conflict": {
-        "symfony/symfony": "*"
+        "symfony/symfony": "*",
+        "shopware/app-php-sdk": "<2.0.4"
     },
     "extra": {
         "symfony": {
